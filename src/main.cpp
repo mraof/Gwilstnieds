@@ -12,11 +12,9 @@ int main(int argc, char *argv[])
     int fontTexture = Graphics::loadImage("resources/Font.png");
     while(handleInput())
     {
-        glClearColor(1, 1, 1, 0);
-        glClear( GL_COLOR_BUFFER_BIT );
         Graphics::drawSprite(16, 16, 32, 32, sprite0);
         Graphics::drawText(0, 200, 8, 16, fontTexture, "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz\n~!@#$%^&*()_+`-=[]\\{}|;':\",./<>?");
-        SDL_GL_SwapBuffers();
+        Graphics::refresh();
     }
     return 0;
 }

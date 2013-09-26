@@ -2,10 +2,12 @@
 #include "stb_image.h"
 namespace Graphics
 {
+    SDL_Window *sdlWindow;
     void init()
     {
         //Create Window
-        SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, SDL_OPENGL);
+        sdlWindow = SDL_CreateWindow("Gwilstnieds", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
+        SDL_GL_CreateContext(sdlWindow);
 
         //OpenGL stuff
         glMatrixMode(GL_PROJECTION); //set mode to 2D
@@ -90,5 +92,11 @@ namespace Graphics
             glVertex2d(x + i * width + width, y);
             glEnd();
         }
+    }
+    void refresh()
+    {
+        SDL_GL_SwapWindow(sdlWindow);
+        glClearColor(1, 1, 1, 0);
+        glClear( GL_COLOR_BUFFER_BIT );
     }
 }
