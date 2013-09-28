@@ -1,18 +1,30 @@
 #include "graphics.h"
 #include "stb_image.h"
+
 namespace Graphics
 {
     SDL_Window *sdlWindow;
+    const float fullTexCoords[8] =
+    {
+        0.0d, 0.0d,
+        0.0d, 1.0d,
+        1.0d, 0.0d,
+        1.0d, 1.0d,
+    };
+    const float letterWidth = 1.0 / LETTERS;
     void init()
     {
-        //Create Window
+        //Create Window with OpenGL capability
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
+
         sdlWindow = SDL_CreateWindow("Gwilstnieds", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
         SDL_GL_CreateContext(sdlWindow);
 
         //OpenGL stuff
         glMatrixMode(GL_PROJECTION); //set mode to 2D
         glLoadIdentity();
-        glOrtho (0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 1);
+        glOrthof(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 1);
         glMatrixMode (GL_MODELVIEW);
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_TEXTURE_2D);
@@ -21,6 +33,8 @@ namespace Graphics
         glLoadIdentity();
         //Displacement trick for exact pixelization
         glTranslatef(0.375, 0.375, 0);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glEnableClientState(GL_VERTEX_ARRAY);
     }
 
     //loads an image and returns the handle of the texture
@@ -52,24 +66,25 @@ namespace Graphics
 //            x = x - offsetX;
 //            y = y - offsetY;
 //        }
+        float vertices[8] =
+        {
+            x, y,
+            x, y + height,
+            x + width, y,
+            x + width, y + height,
+        };
+
+
         glBindTexture(GL_TEXTURE_2D, texture);
-        glBegin(GL_TRIANGLE_STRIP);
-        //Top Left
-        glTexCoord2d(0.0d, 0.0d);
-        glVertex2f(x, y);
-        //Bottom Left
-        glTexCoord2d(0.0d, 1.0d);
-        glVertex2f(x, y + height);
-        //Top Right
-        glTexCoord2d(1.0d, 0.0d);
-        glVertex2f(x + width, y);
-        //Bottom Right
-        glTexCoord2d(1.0d, 1.0d);
-        glVertex2f(x + width, y + height);
-        glEnd();
+
+        glTexCoordPointer(2, GL_FLOAT, 0, fullTexCoords);
+        glVertexPointer(2, GL_FLOAT, 0, vertices);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
+
     void drawText(int x, int y, double width, double height, GLuint texture, const std::string& text)
     {
+
         glBindTexture(GL_TEXTURE_2D, texture);
         for(unsigned int i = 0; i < text.length(); i++)
         {
@@ -78,21 +93,36 @@ namespace Graphics
                 x = x - (i + 1) * width;
                 y = y + height;
                 continue;
+
             }
+
             double letterOffset = ((text[i] - 32) % (int) LETTERS) / LETTERS;
-            double letterWidth = 1.0 / LETTERS;
-            glBegin(GL_QUADS);
-            glTexCoord2d(letterOffset, 0);
-            glVertex2d(x + i * width, y);
-            glTexCoord2d(letterOffset, 1);
-            glVertex2d(x + i * width, y + height);
-            glTexCoord2d(letterOffset + letterWidth, 1);
-            glVertex2d(x + i * width + width, y + height);
-            glTexCoord2d(letterOffset + letterWidth, 0);
-            glVertex2d(x + i * width + width, y);
-            glEnd();
+
+
+            float vertices[8] =
+            {
+                x + i * width, y,
+                x + i * width, y + height,
+                x + i * width + width, y,
+                x + i * width + width, y + height,
+            };
+
+            float letterTexCoords[8] =
+            {
+                letterOffset, 0.0d,
+                letterOffset, 1.0d,
+                letterOffset + letterWidth, 0.0d,
+                letterOffset + letterWidth, 1.0d,
+            };
+
+            glBindTexture(GL_TEXTURE_2D, texture);
+
+            glTexCoordPointer(2, GL_FLOAT, 0, letterTexCoords);
+            glVertexPointer(2, GL_FLOAT, 0, vertices);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         }
     }
+
     void refresh()
     {
         SDL_GL_SwapWindow(sdlWindow);

@@ -1,7 +1,8 @@
 #ifndef GRAPHICS_H_INCLUDED
 #define GRAPHICS_H_INCLUDED
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_opengl.h>
+//#include <SDL2/SDL_opengl.h>
+#include <SDL2/SDL_opengles.h>
 #include <string>
 
 #define SCREEN_WIDTH 640
