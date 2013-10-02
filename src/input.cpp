@@ -1,4 +1,5 @@
 #include "input.h"
+#include "graphics.h"
 #include <SDL2/SDL.h>
 
 
@@ -13,6 +14,14 @@ bool handleInput()
         //Handle user quit
         if( event.type == SDL_QUIT )
             return false;
+        if( event.type == SDL_WINDOWEVENT)
+        {
+            switch(event.window.event)
+            {
+            case SDL_WINDOWEVENT_RESIZED:
+                glViewport(0, 0, event.window.data1, event.window.data2);
+            }
+        }
         if( event.type = SDL_KEYDOWN)
             switch(event.key.keysym.scancode)
             {

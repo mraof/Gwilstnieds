@@ -38,9 +38,9 @@ int Unit::moveTo(int x, int y)
     for(unsigned int i = 0; i < parts.size(); i++)
         if(parts[i].x == x && parts[i].y == y)
             parts.erase(parts.begin() + i);
-        parts.push_back(Coordinate(x, y));
-        if(parts.size() > maxSize)
-            parts.erase(parts.begin()); //this needs to be improved so it only removes adjacent parts
+    parts.push_back(Coordinate(x, y));
+    if(parts.size() > maxSize)
+        parts.erase(parts.begin());
     return 0;
 }
 
@@ -51,15 +51,15 @@ void Unit::moveDirection(int direction)
         int xChange = (direction == RIGHT) - (direction == LEFT);
         int yChange = (direction == DOWN) - (direction == UP);
         moveTo(centralX + xChange, centralY + yChange);
-        distanceToMoveX = xChange * 32;
-        distanceToMoveY = yChange * 32;
+        distanceToMoveX = xChange * TILE_SIZE;
+        distanceToMoveY = yChange * TILE_SIZE;
     }
 }
 void Unit::draw()
 {
     for(unsigned int i = 0; i < parts.size(); i++)
-        Graphics::drawSprite(parts[i].x * 32, parts[i].y * 32, 32, 32, tileTexture);
-    Graphics::drawSprite(centralX * 32 - distanceToMoveX, centralY * 32 - distanceToMoveY, 32, 32, texture);
+        Graphics::drawSprite(parts[i].x * TILE_SIZE, parts[i].y * TILE_SIZE, TILE_SIZE, TILE_SIZE, tileTexture);
+    Graphics::drawSprite(centralX * TILE_SIZE - distanceToMoveX, centralY * TILE_SIZE - distanceToMoveY, UNIT_SIZE, UNIT_SIZE, texture);
     if(distanceToMoveX > 0)
         distanceToMoveX--;
     else if(distanceToMoveX < 0)
