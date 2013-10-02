@@ -3,33 +3,34 @@
 
 namespace Graphics
 {
-    SDL_Window *sdlWindow;
+    SDL_Window *sdlWindow; //window program displays in
     const float fullTexCoords[8] =
     {
         0.0d, 0.0d,
         0.0d, 1.0d,
         1.0d, 0.0d,
         1.0d, 1.0d,
-    };
+    }; //coordinates for entire texturs, top/left is 0, bottom/right is 1
     const float letterWidth = 1.0 / LETTERS;
     void init()
     {
-        //Create Window with OpenGL capability
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
+        //set up SDL with OpenGL
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE); //set OpenGL profile
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 ); //set OpenGL version
 
-        sdlWindow = SDL_CreateWindow("Gwilstnieds", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
-        SDL_GL_CreateContext(sdlWindow);
+        sdlWindow = SDL_CreateWindow("Gwilstnieds", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN ); //create window with support for OpenGL
+        SDL_GL_CreateContext(sdlWindow); //create OpenGL context
+        SDL_GL_SetSwapInterval(true); //set VSync
 
         //OpenGL stuff
         glMatrixMode(GL_PROJECTION); //set mode to 2D
         glLoadIdentity();
-        glOrthof(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 1);
+        glOrtho(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 1);
         glMatrixMode (GL_MODELVIEW);
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_TEXTURE_2D);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND); //enables blending
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //blends transparency
         glLoadIdentity();
         //Displacement trick for exact pixelization
         glTranslatef(0.375, 0.375, 0);
@@ -59,7 +60,7 @@ namespace Graphics
         return texture_handle;
     }
 
-    void drawSprite(int x, int y, int width, int height, GLuint texture, bool withOffset)
+    void drawSprite(float x, float y, float width, float height, GLuint texture, bool withOffset)
     {
 //        if(withOffset)
 //        {
@@ -82,7 +83,7 @@ namespace Graphics
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
 
-    void drawText(int x, int y, double width, double height, GLuint texture, const std::string& text)
+    void drawText(float x, float y, float width, float height, GLuint texture, const std::string& text)
     {
 
         glBindTexture(GL_TEXTURE_2D, texture);
@@ -96,7 +97,7 @@ namespace Graphics
 
             }
 
-            double letterOffset = ((text[i] - 32) % (int) LETTERS) / LETTERS;
+            float letterOffset = ((text[i] - 32) % (int) LETTERS) / LETTERS;
 
 
             float vertices[8] =
