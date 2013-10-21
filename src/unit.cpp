@@ -2,7 +2,7 @@
 #include "input.h"
 #include "graphics.h"
 
-extern int tileTexture;
+extern int unitTileTexture;
 
 UnitBase::UnitBase(const std::string &name, int maxSize, int speed, int texture, ability ability0, ability ability1, ability ability2, ability ability3)
 {
@@ -18,7 +18,7 @@ UnitBase::UnitBase(const std::string &name, int maxSize, int speed, int texture,
 }
 
 
-Unit::Unit(UnitBase &baseUnit, int startX, int startY)
+Unit::Unit(UnitBase &baseUnit, int startX, int startY, Map *currentMap)
 {
     name = baseUnit.name;
     maxSize = baseUnit.maxSize;
@@ -27,11 +27,16 @@ Unit::Unit(UnitBase &baseUnit, int startX, int startY)
     abilities = baseUnit.abilities;
     distanceToMoveX = 0;
     distanceToMoveY = 0;
+    this->currentMap = currentMap;
     moveTo(startX, startY);
 }
 
 int Unit::moveTo(int x, int y)
 {
+    if(x >= currentMap->width || y >= currentMap->height || x < 0 || y < 0)
+        return 1;
+    if(!currentMap->tileGrid[x + y * currentMap->width])
+        return 1;
     centralX = x;
     centralY = y;
     bool exists = false;
@@ -50,15 +55,17 @@ void Unit::moveDirection(int direction)
     {
         int xChange = (direction == RIGHT) - (direction == LEFT);
         int yChange = (direction == DOWN) - (direction == UP);
-        moveTo(centralX + xChange, centralY + yChange);
-        distanceToMoveX = xChange * TILE_SIZE;
-        distanceToMoveY = yChange * TILE_SIZE;
+        if(!moveTo(centralX + xChange, centralY + yChange))
+        {
+            distanceToMoveX = xChange * TILE_SIZE;
+            distanceToMoveY = yChange * TILE_SIZE;
+        }
     }
 }
 void Unit::draw()
 {
     for(unsigned int i = 0; i < parts.size(); i++)
-        Graphics::drawSprite(parts[i].x * TILE_SIZE, parts[i].y * TILE_SIZE, TILE_SIZE, TILE_SIZE, tileTexture);
+        Graphics::drawSprite(parts[i].x * TILE_SIZE, parts[i].y * TILE_SIZE, TILE_SIZE, TILE_SIZE, unitTileTexture);
     Graphics::drawSprite(centralX * TILE_SIZE - distanceToMoveX, centralY * TILE_SIZE - distanceToMoveY, UNIT_SIZE, UNIT_SIZE, texture);
     if(distanceToMoveX > 0)
         distanceToMoveX--;
@@ -68,4 +75,10 @@ void Unit::draw()
         distanceToMoveY--;
     else if(distanceToMoveY < 0)
         distanceToMoveY++;
+}
+bool Unit::damage(int value)
+{
+    for(int i = 0; i < value && parts.size() > 0; i++)
+        parts.erase(parts.begin());
+    return parts.size() > 0;
 }

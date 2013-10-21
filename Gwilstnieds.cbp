@@ -44,6 +44,8 @@
 		<Unit filename="src/input.cpp" />
 		<Unit filename="src/input.h" />
 		<Unit filename="src/main.cpp" />
+		<Unit filename="src/map.cpp" />
+		<Unit filename="src/map.h" />
 		<Unit filename="src/profile.cpp" />
 		<Unit filename="src/profile.h" />
 		<Unit filename="src/stb_image.h" />

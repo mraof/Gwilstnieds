@@ -5,8 +5,8 @@
 //#include <SDL2/SDL_opengles.h>
 #include <string>
 
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 1024
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 480
 #define SCREEN_BPP 32
 #define LETTERS 95.0
 #define UNIT_SIZE 32

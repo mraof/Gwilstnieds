@@ -2,6 +2,7 @@
 #define UNIT_H
 #include <string>
 #include <vector>
+#include "map.h"
 
 struct ability
 {
@@ -41,11 +42,13 @@ class Unit
         ability *abilities;
         std::vector<Coordinate> parts;
         int centralX, centralY;
+        Map *currentMap;
 
-        Unit(UnitBase &baseUnit, int startX, int startY);
+        Unit(UnitBase &baseUnit, int startX, int startY, Map *currentMap);
         int moveTo(int x, int y);
         void moveDirection(int direction);
         void draw();
+        bool damage(int value);
 };
 
 #endif // UNIT_H
